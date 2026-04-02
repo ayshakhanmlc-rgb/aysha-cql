@@ -858,27 +858,8 @@ export const organizations: Organization[] = [
     levelRequired: q.levelRequired,
     attendees: questAttendees[q.id] || [],
   })),
-  // POIs mapped to Organization
-  ...mapPOIs.map((poi): Organization => ({
-    id: poi.id,
-    name: poi.name,
-    type: 'hangout',
-    oneLiner: poi.description,
-    description: poi.description,
-    location: poi.location,
-    address: '',
-    vibe: poi.vibe,
-    thumbnail: poi.thumbnail,
-    matchPercent: 0,
-    xp: 0,
-    transitTime: '',
-    skills: [],
-    whyYoullLove: [],
-    whatYoullDo: [],
-    locked: !poi.unlocked,
-    attendees: [],
-    icon: poi.icon,
-  })),
+
+
   // Partners mapped to Organization
   ...partnerOrgs.map((p): Organization => ({
     id: p.id,
