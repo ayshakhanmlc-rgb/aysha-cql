@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
 
-const FILTER_CHIPS = ['All', 'Quests', 'Partners', 'Hangouts', 'Mentors', 'People'] as const;
+const FILTER_CHIPS = ['All', 'Quests', 'Partners'] as const;
 
 export interface FilterBarProps {
   activeFilter: string;
