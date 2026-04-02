@@ -7,16 +7,13 @@ import HeroLanding from '@/components/HeroLanding';
 import VideoIntro from '@/components/VideoIntro';
 import MainNavBar from '@/components/MainNavBar';
 import GameMap from '@/components/map/GameMap';
-import SocialHub from '@/components/social/SocialHub';
 
-type AppView = 'map' | 'social';
 type EntryPhase = 'splash' | 'hero' | 'video' | 'onboarding' | 'app';
 
 const Index = () => {
   const [searchParams] = useSearchParams();
   const skipIntro = searchParams.get('skip') || sessionStorage.getItem('fq_in_app');
   const [phase, setPhase] = useState<EntryPhase>(skipIntro ? 'app' : 'splash');
-  const [activeView, setActiveView] = useState<AppView>('map');
 
   const handleOnboardingComplete = (_data: OnboardingData) => {
     sessionStorage.setItem('fq_in_app', '1');
@@ -46,15 +43,10 @@ const Index = () => {
   return (
     <PartyProvider>
       <div className="relative w-full h-screen overflow-hidden bg-background">
-        <div className={`absolute inset-0 ${activeView === 'map' ? '' : 'invisible'}`}>
+        <div className="absolute inset-0">
           <GameMap />
         </div>
-
-        <div className={`absolute inset-0 ${activeView === 'social' ? '' : 'invisible'}`} style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom, 0px))' }}>
-          <SocialHub />
-        </div>
-
-        <MainNavBar activeView={activeView} onViewChange={setActiveView} />
+        <MainNavBar />
       </div>
     </PartyProvider>
   );
