@@ -11,11 +11,7 @@ import {
   jordan,
   aisha,
   vibeColors,
-  otherPlayers,
-  npcCharacters,
-  extraPlayers,
   type Organization,
-  type Vibe,
 } from '@/data/mockData';
 import { fetchWalkingRoute, type RouteResult } from '@/lib/routing';
 import { useParty } from '@/contexts/PartyContext';
@@ -26,7 +22,6 @@ import OrgPreviewCard from './OrgPreviewCard';
 import OrgDetailSheet from './OrgDetailSheet';
 import OrgListView from './OrgListView';
 import FindPartyOverlay from './FindPartyOverlay';
-import NpcChatOverlay from './NpcChatOverlay';
 import PartyChat from './PartyChat';
 import BulletinBoardOverlay from '@/components/bulletin/BulletinBoardOverlay';
 import { useTourState } from '@/components/tour/useTourState';
@@ -38,8 +33,6 @@ const GameMap = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const markersRef = useRef<L.MarkerClusterGroup | null>(null);
   const routeLayerRef = useRef<L.Polyline | null>(null);
-  const playerLayerRef = useRef<L.LayerGroup | null>(null);
-  const npcLayerRef = useRef<L.LayerGroup | null>(null);
 
   const { isPartyFormed, formParty } = useParty();
   const [showListView, setShowListView] = useState(false);
@@ -49,7 +42,6 @@ const GameMap = () => {
   const [detailOrg, setDetailOrg] = useState<Organization | null>(null);
   const [listSearch, setListSearch] = useState('');
   const [showFindParty, setShowFindParty] = useState(false);
-  const [showNpc, setShowNpc] = useState<string | null>(null);
   const [questAccepted, setQuestAccepted] = useState<Record<string, boolean>>({});
   const [showBulletin, setShowBulletin] = useState(false);
   const [routeInfo, setRouteInfo] = useState<RouteResult | null>(null);
@@ -69,9 +61,6 @@ const GameMap = () => {
       maxZoom: 19,
     }).addTo(map);
 
-    // Player layer group
-    const playerLayer = L.layerGroup();
-
     // Player marker (You)
     const playerIcon = L.divIcon({
       className: 'player-marker',
@@ -82,50 +71,7 @@ const GameMap = () => {
       iconSize: [52, 70],
       iconAnchor: [26, 35],
     });
-    L.marker(maya.location, { icon: playerIcon, zIndexOffset: 1000 }).addTo(playerLayer);
-
-    // Other player avatars
-    const allPlayers = [...otherPlayers, ...extraPlayers];
-    allPlayers.forEach(player => {
-      const color = vibeColors[player.vibe];
-      const icon = L.divIcon({
-        className: 'player-marker',
-        html: `<div style="display:flex;flex-direction:column;align-items:center">
-          <div style="width:44px;height:44px;border-radius:50%;border:3px solid ${color};overflow:hidden;box-shadow:0 3px 10px ${color}30;background:white"><img src="${player.photo}" style="width:100%;height:100%;object-fit:cover"/></div>
-          <span style="margin-top:3px;font-size:10px;font-weight:600;color:#334155;background:white;padding:1px 6px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.08)">${player.name.split(' ')[0]}</span>
-        </div>`,
-        iconSize: [44, 62],
-        iconAnchor: [22, 31],
-      });
-      L.marker(player.location, { icon }).addTo(playerLayer);
-    });
-
-    playerLayer.addTo(map);
-    playerLayerRef.current = playerLayer;
-
-    // NPC layer group
-    const npcLayer = L.layerGroup();
-
-    npcCharacters.forEach(npc => {
-      const color = vibeColors[npc.vibe];
-      const icon = L.divIcon({
-        className: 'player-marker',
-        html: `<div style="display:flex;flex-direction:column;align-items:center;cursor:pointer">
-          <div style="width:44px;height:44px;border-radius:50%;border:3px solid ${color};overflow:hidden;box-shadow:0 3px 10px ${color}30;background:white"><img src="${npc.photo}" style="width:100%;height:100%;object-fit:cover"/></div>
-          <span style="margin-top:3px;font-size:9px;font-weight:700;color:white;background:${color};padding:1px 6px;border-radius:8px">${npc.npcRole || npc.name.split(' ')[0]}</span>
-        </div>`,
-        iconSize: [44, 62],
-        iconAnchor: [22, 31],
-      });
-      const marker = L.marker(npc.location, { icon });
-      marker.on('click', () => {
-        setShowNpc(npc.id);
-      });
-      marker.addTo(npcLayer);
-    });
-
-    npcLayer.addTo(map);
-    npcLayerRef.current = npcLayer;
+    L.marker(maya.location, { icon: playerIcon, zIndexOffset: 1000 }).addTo(map);
 
     // Cluster group
     const cluster = L.markerClusterGroup({
@@ -161,9 +107,6 @@ const GameMap = () => {
     const filtered = activeFilter === 'All' ? organizations : organizations.filter(o => {
       if (activeFilter === 'Quests') return o.type === 'quest';
       if (activeFilter === 'Partners') return o.type === 'partner';
-      if (activeFilter === 'Hangouts') return o.type === 'hangout';
-      if (activeFilter === 'Mentors') return o.type === 'mentorship';
-      if (activeFilter === 'People') return false; // People filter shows only players
       return true;
     });
 
@@ -206,22 +149,6 @@ const GameMap = () => {
     });
   }, [activeFilter]);
 
-  // Show/hide player and NPC layers based on filter
-  useEffect(() => {
-    const map = mapRef.current;
-    const playerLayer = playerLayerRef.current;
-    const npcLayer = npcLayerRef.current;
-    if (!map || !playerLayer || !npcLayer) return;
-
-    const showPlayers = activeFilter === 'All' || activeFilter === 'People';
-    const showNpcs = activeFilter === 'All' || activeFilter === 'Mentors';
-
-    if (showPlayers && !map.hasLayer(playerLayer)) map.addLayer(playerLayer);
-    if (!showPlayers && map.hasLayer(playerLayer)) map.removeLayer(playerLayer);
-    if (showNpcs && !map.hasLayer(npcLayer)) map.addLayer(npcLayer);
-    if (!showNpcs && map.hasLayer(npcLayer)) map.removeLayer(npcLayer);
-  }, [activeFilter]);
-
   // Route drawing
   const drawRoute = useCallback(async (org: Organization) => {
     if (routeLayerRef.current && mapRef.current) {
@@ -256,11 +183,6 @@ const GameMap = () => {
   const handleFormParty = () => {
     formParty([jordan, aisha]);
     setShowFindParty(false);
-    setTimeout(() => setShowNpc('marcus'), 400);
-  };
-
-  const handleNpcDone = () => {
-    setShowNpc(null);
   };
 
   return (
@@ -309,10 +231,6 @@ const GameMap = () => {
 
       <AnimatePresence>
         {showFindParty && <FindPartyOverlay onPartyFormed={handleFormParty} onClose={() => setShowFindParty(false)} />}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {showNpc && <NpcChatOverlay npcId={showNpc} onClose={handleNpcDone} />}
       </AnimatePresence>
 
       {showBulletin && detailOrg && <BulletinBoardOverlay org={detailOrg} onClose={() => setShowBulletin(false)} />}
