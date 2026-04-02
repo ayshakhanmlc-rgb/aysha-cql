@@ -361,6 +361,11 @@ const questSkills: Record<string, string[]> = {
   google: ['UX Design', 'Engineering', 'Product Thinking'],
   moma: ['Art Curation', 'Visual Literacy', 'Cultural Awareness'],
   foodbank: ['Community Organizing', 'Food Systems', 'Leadership'],
+  conedison: ['Infrastructure Systems', 'Data Analysis', 'Problem Solving'],
+  northwell: ['Patient Communication', 'Health Systems', 'Critical Thinking'],
+  goldman: ['Financial Analysis', 'Decision Making', 'Quantitative Reasoning'],
+  jpmorgan: ['Strategic Thinking', 'Data Literacy', 'Communication'],
+  nycgov: ['Public Policy', 'Community Engagement', 'Leadership'],
 };
 
 const questAttendees: Record<string, string[]> = {
@@ -368,6 +373,11 @@ const questAttendees: Record<string, string[]> = {
   newlab: ['player-6', 'player-10', 'player-14'],
   sinai: ['aisha', 'player-7'],
   google: ['player-8', 'player-9', 'player-11'],
+  conedison: [],
+  northwell: [],
+  goldman: [],
+  jpmorgan: [],
+  nycgov: [],
 };
 
 export interface PartnerOrg {
