@@ -265,14 +265,7 @@ export interface MapPOI {
   thumbnail: string;
 }
 
-export const mapPOIs: MapPOI[] = [
-  { id: 'wework1', name: 'The Hive Co-working', description: 'Your unlocked base in Chelsea — study, create, & meet other players here', location: [40.7425, -73.9885], icon: '🏠', vibe: 'fixer', unlocked: true, thumbnail: questNewlab },
-  { id: 'park1', name: 'Central Park Meetup Spot', description: 'Party meetup point — rally your squad before quests uptown', location: [40.7829, -73.9654], icon: '📍', vibe: 'connector', unlocked: true, thumbnail: questSinai },
-  { id: 'library', name: 'NYPL Study Hall', description: 'Quiet focus zone — bonus XP for completing skill challenges here', location: [40.7532, -73.9822], icon: '📖', vibe: 'creator', unlocked: true, thumbnail: questDroga5 },
-  { id: 'stadium', name: 'Yankee Stadium Arena', description: 'Locked arena — reach Level 5 to unlock competitive challenges', location: [40.8296, -73.9262], icon: '🔒', vibe: 'competitor', unlocked: false, thumbnail: questTrading },
-  { id: 'hub', name: 'Brooklyn Tech Hub', description: 'Maker space & tech lab — 3D printers, code stations, and mentors on-site', location: [40.7395, -73.9903], icon: '⚙️', vibe: 'fixer', unlocked: true, thumbnail: questNewlab },
-  { id: 'gallery', name: 'SoHo Street Art Lab', description: 'Locked creative studio — complete 3 Creator quests to unlock', location: [40.7190, -73.9973], icon: '🔒', vibe: 'creator', unlocked: false, thumbnail: questDroga5 },
-];
+
 
 // Unified organization type for the card system and marker system
 export type OrgType = 'quest' | 'internship' | 'mentorship' | 'hangout' | 'partner';
